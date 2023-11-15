@@ -1,0 +1,56 @@
+body {
+    background-image: url('bibliotheque.jpg'); /* Remplacez 'bibliotheque.jpg' par le chemin de votre image de fond */
+    background-size: cover;
+    color: #5F432C; /* Marron */
+    font-family: Arial, sans-serif;
+}
+
+.container {
+    background-color: #DBC096; /* Beige */
+    padding: 20px;
+    border-radius: 10px;
+    margin: 20px;
+    display: flex; /*division 2 parts */
+    justify-content: space-between;
+}
+
+
+.part {
+    flex: 1;
+    padding: 20px;
+    /*border: 1px solid #000;*/
+}
+
+
+
+form {
+    text-align: left;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="tel"],
+textarea,
+input[type="date"] {
+    width: 100%;
+    padding: 10px;
+    margin: 5px 0;
+    border: none;
+    border-radius: 5px;
+    background-color: #FFF8DC; /* Beige clair */
+}
+
+input[type="submit"] {
+    background-color: #5F432C; /* Marron */
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    margin: 10px 0;
+}
+
+input[type="submit"]:hover {
+    background-color: #8B6914; /* Marron plus foncé au survol */
+}
