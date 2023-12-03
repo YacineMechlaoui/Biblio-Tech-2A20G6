@@ -7,8 +7,11 @@ Class Checkout extends Controller
 	{
 		
 		$User = $this->load_model('User');
+
 		$image_class = $this->load_model('Image');
-		$user_data = $User->check_login();
+		
+		//make sure the user is logged in
+		$user_data = $User->check_login(true, ["admin","customer"]);
 
 		if(is_object($user_data)){
 			$data['user_data'] = $user_data;
@@ -25,7 +28,8 @@ Class Checkout extends Controller
 
 			$ROWS = $DB->read("select * from products where id in ($ids_str)");
 		}
- 
+ 	 
+
 		if(is_array($ROWS)){
 			foreach ($ROWS as $key => $row) {
 				# code...
@@ -74,6 +78,7 @@ Class Checkout extends Controller
   			$order = $this->load_model('Order');
  			$order->validate($_POST);
 			$data['errors'] = $order->errors;
+			$_POST['order_id'] = get_order_id();
 
 			$_SESSION['POST_DATA'] = $_POST;
 			$data['POST_DATA'] = $_POST;
@@ -91,7 +96,9 @@ Class Checkout extends Controller
 	{
 		$User = $this->load_model('User');
 		$image_class = $this->load_model('Image');
-		$user_data = $User->check_login();
+
+		//make sure the user is logged in
+		$user_data = $User->check_login(true, ["admin","customer"]);
 
 		if(is_object($user_data)){
 			$data['user_data'] = $user_data;
@@ -136,7 +143,10 @@ Class Checkout extends Controller
 		}
 
 		$data['order_details'] = $ROWS;
-		$data['orders'][] = $_SESSION['POST_DATA'];
+
+		if(isset($_SESSION['POST_DATA'])){
+			$data['orders'][] = $_SESSION['POST_DATA'];
+		}
 		
 		$data['page_title'] = "Checkout Summary";
 
@@ -149,13 +159,16 @@ Class Checkout extends Controller
 			}
 
 			$order = $this->load_model('Order');
+			$_SESSION['POST_DATA']['total'] = get_total($ROWS);
+			$_SESSION['POST_DATA']['description'] = get_order_id();
+
 			$order->save_order($_SESSION['POST_DATA'],$ROWS,$user_url,$sessionid);
 			$data['errors'] = $order->errors;
 			
-			unset($_SESSION['POST_DATA']);
+			//unset($_SESSION['POST_DATA']);
 			unset($_SESSION['CART']);
 
-			header("Location:".ROOT."checkout/thank_you");
+			header("Location:".ROOT."checkout/pay");
 			die;
 		}
 
@@ -163,8 +176,28 @@ Class Checkout extends Controller
 
 	}
 
+	public function pay()
+	{
+
+		$User = $this->load_model('User');
+
+		//make sure the user is logged in
+		$user_data = $User->check_login(true, ["admin","customer"]);
+
+		$data['page_title'] = "Pay Now";
+		$this->view("checkout.pay",$data);
+	}
+	
 	public function thank_you()
 	{
+
+		if(isset($_SESSION['POST_DATA'])){
+			unset($_SESSION['POST_DATA']);
+		}
+		
+		if(isset($_SESSION['CART'])){
+			unset($_SESSION['CART']);
+		}
 
 		$data['page_title'] = "Thank you";
 		$this->view("checkout.thank_you",$data);
